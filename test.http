@@ -17,3 +17,15 @@ Content-Type: application/json
 {
   "body": "I had something interesting for breakfast.I had something interesting for breakfast.I had something interesting for breakfast.I had something interesting for breakfast.I had something interesting for breakfast.I had something interesting for breakfast.I had something interesting for breakfastI had something interesting for breakfastI had something interesting for breakfastI had something interesting for breakfastI had something interesting for breakfast."
 }
+### 
+POST http://localhost:8080/admin/reset
+Content-Type: application/json
+
+#### 
+
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "email": "mloneusk@example.com"
+}
