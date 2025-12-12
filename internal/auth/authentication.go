@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"log"
 	"net/http"
@@ -30,8 +32,8 @@ func CheckPasswordHash(password, hash string) (bool, error) {
 	return valid, nil
 }
 
-func MakeJWT(userID uuid.UUID, tokenSecret string, expiresIn time.Duration) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{Issuer: "chirpy", IssuedAt: jwt.NewNumericDate(time.Now()), ExpiresAt: jwt.NewNumericDate(time.Now().Add(expiresIn)), Subject: userID.String()})
+func MakeJWT(userID uuid.UUID, tokenSecret string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{Issuer: "chirpy", IssuedAt: jwt.NewNumericDate(time.Now()), ExpiresAt: jwt.NewNumericDate(time.Now().Add(3600 * time.Second)), Subject: userID.String()})
 	return token.SignedString([]byte(tokenSecret))
 }
 
@@ -68,5 +70,29 @@ func GetBearerToken(h http.Header) (string, error) {
 		return "", errors.New("expected bearer scheme")
 	}
 
+	return parts[1], nil
+}
+
+func MakeRefreshToken() (string, error) {
+	key := make([]byte, 32)
+	rand.Read(key)
+	encodedeStr := hex.EncodeToString(key)
+	return encodedeStr, nil
+}
+
+func GetAPIKey(headers http.Header) (string, error) {
+	authHeader := headers.Get("Authorization")
+	if authHeader == "" {
+		return "", errors.New("missing authorization header")
+	}
+
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 {
+		return "", errors.New("malformed authorization header")
+	}
+	scheme := strings.ToLower(parts[0])
+	if scheme != "apikey" {
+		return "", errors.New("expected apikey scheme")
+	}
 	return parts[1], nil
 }

@@ -2,7 +2,6 @@ package auth
 
 import (
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -68,7 +67,7 @@ func TestCheckPasswordHashInvalidHash(t *testing.T) {
 func TestMakeAndValidateJWT(t *testing.T) {
 	userID := uuid.New()
 	secret := "super-secret-key"
-	token, err := MakeJWT(userID, secret, time.Minute)
+	token, err := MakeJWT(userID, secret)
 	if err != nil {
 		t.Fatalf("MakeJWT returned error: %v", err)
 	}
@@ -84,7 +83,7 @@ func TestMakeAndValidateJWT(t *testing.T) {
 func TestValidateJWTExpired(t *testing.T) {
 	userID := uuid.New()
 	secret := "super-secret-key"
-	token, err := MakeJWT(userID, secret, -1*time.Second)
+	token, err := MakeJWT(userID, secret)
 	if err != nil {
 		t.Fatalf("MakeJWT returned error: %v", err)
 	}
@@ -99,7 +98,7 @@ func TestValidateJWTWrongSecret(t *testing.T) {
 	secret := "correct-secret"
 	wrongSecret := "wrong-secret"
 
-	token, err := MakeJWT(userID, secret, time.Minute)
+	token, err := MakeJWT(userID, secret)
 	if err != nil {
 		t.Fatalf("MakeJWT returned error: %v", err)
 	}
